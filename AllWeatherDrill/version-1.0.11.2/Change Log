@@ -1,0 +1,5 @@
+1.0.5-local
+- Fix save/reload during non-temperate Moddable Weathers events.
+- Read the live base weather and active weather modifiers.
+- Add separate Rain, Monsoon, and Refreshing flow settings.
+- Treat Badtide/Drought/Monsoon/Rain/Refreshing the same whether base weather or modifier.

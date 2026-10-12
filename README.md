@@ -1,6 +1,6 @@
 # All Weather Drill — Timberborn
 
-This repository preserves a **locally modified build** of **All Weather Drill** for Timberborn, including its C# patch source, compiled assembly, manifest, changelog and localization.
+This repository preserves a **locally modified build** of **All Weather Drill** for Timberborn, including its C# patch source, manifest, changelog and localization.
 
 ## Original mod and credit
 
@@ -31,7 +31,7 @@ The mod's packaged directory layout is preserved under `AllWeatherDrill/version-
 | --- | --- |
 | `manifest.json` | Mod metadata and dependency declarations |
 | `Patches/all weather drills.cs` | C# Harmony patch source |
-| `Patches/all weather drills.dll` | Compiled mod assembly from the supplied archive |
+| `Patches/all weather drills.dll` | Binary is present in the supplied ZIP but **not uploaded to this source repository** |
 | `Localizations/enUS.csv` | English UI strings |
 | `Change Log` | Supplied changelog |
 
@@ -39,8 +39,12 @@ The mod's packaged directory layout is preserved under `AllWeatherDrill/version-
 
 ## Installing the supplied build
 
-Use the `AllWeatherDrill` folder as the mod folder so that its `version-1.0.11.2` subfolder, manifest, patches and localization remain together. Avoid running two copies of the same mod ID.
+For an installable build use the user's supplied ZIP (which includes the DLL); cloning this source repository alone is insufficient. Use the `AllWeatherDrill` folder as the mod folder so that its `version-1.0.11.2` subfolder, manifest, patches and localization remain together. Avoid running two copies of the same mod ID.
 
 ## Source and build status
 
-The archive includes one `.cs` source file plus the compiled `.dll`; **it does not include a `.csproj` or a complete reproducible build setup**. The repository is a faithful archival copy plus this documentation, not a claim that the assembly was rebuilt or tested against the latest Timberborn release.
+The supplied archive includes one `.cs` source file plus a compiled `.dll` (the binary has not been committed); **it does not include a `.csproj` or a complete reproducible build setup**. The repository contains the extracted text/source files and this documentation, not a claim that the assembly was rebuilt or tested against the latest Timberborn release.
+
+## Known discrepancy in the supplied package
+
+The supplied `Change Log` says it adds separate Rain, Monsoon and Refreshing flow settings, but the supplied C# source only has one `NormalWeatherScale` for those three weather conditions. The changelog is preserved verbatim for provenance.

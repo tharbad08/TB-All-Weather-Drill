@@ -1,0 +1,24 @@
+name: Audit Moddable Weathers upstream
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  upstream-api-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch pinned upstream Moddable Weathers source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none --no-checkout https://github.com/datvm/TimberbornMods.git upstream-repo
+          cd upstream-repo
+          git checkout 8bc6fa14dfa8ccd299df98678971e629a2d1adc2
+      - name: Verify upstream weather, modifier and drill APIs
+        run: python3 scripts/check_moddable_weathers_contract.py upstream-repo/ModdableWeathers

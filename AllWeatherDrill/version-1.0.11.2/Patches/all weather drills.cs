@@ -254,8 +254,19 @@ namespace TonWolfe.AllWeatherDrill
         public static bool GetStrength(
             ref float __result,
             MechanicalNode ____mechanicalNode,
-            HazardousWeatherObserver ____hazardousWeatherObserver)
+            HazardousWeatherObserver ____hazardousWeatherObserver,
+            UnderlyingWaterSource ____underlyingWaterSource)
         {
+            // Moddable Weathers' StopWaterIfBlockedOrBadwater prefix suppresses
+            // production from contaminated sources. Our first-priority Harmony
+            // prefix returns false and could skip that check. Preserve the
+            // contamination gate here instead of relying on another prefix.
+            if (IsWaterContaminated(____underlyingWaterSource))
+            {
+                __result = 0f;
+                return false;
+            }
+
             // Current Timberborn no longer stores a PausableBuilding on the drill.
             // MechanicalNode.ActiveAndPowered is the game's own gate for whether
             // the drill may produce anything (covers paused/unpowered/inactive).
@@ -267,6 +278,33 @@ namespace TonWolfe.AllWeatherDrill
 
             float factor = ScaleFor(CurrentWeatherResolver.Resolve(____hazardousWeatherObserver));
             __result = ____mechanicalNode.PowerEfficiency * Clamp(factor);
+            return false;
+        }
+
+        static bool IsWaterContaminated(UnderlyingWaterSource underlying)
+        {
+            if (underlying == null || underlying.WaterSource == null) return false;
+            // Avoid an additional hard assembly/method dependency. Source API:
+            // Moddable Weathers checks WaterSource.Contamination > 0.
+            try
+            {
+                return ReadWaterContamination(underlying.WaterSource);
+            }
+            catch { return false; }
+        }
+
+        static bool ReadWaterContamination(object waterSource)
+        {
+            for (Type t = waterSource.GetType(); t != null; t = t.BaseType)
+            {
+                var property = t.GetProperty("Contamination", Flags | BindingFlags.DeclaredOnly);
+                if (property == null) continue;
+                object value = property.GetValue(waterSource, null);
+                if (value is float) return (float)value > 0f;
+                if (value is double) return (double)value > 0d;
+                if (value is int) return (int)value > 0;
+                return false;
+            }
             return false;
         }
 

@@ -70,3 +70,17 @@ Alternatively use `dotnet build BuildAWD/AllWeatherDrill.csproj -c Release -p:Ga
 [Build workflow](.github/workflows/build-all-weather-drill.yml) runs on push/PR/manual dispatch and publishes `AllWeatherDrill-compiled-reference-build` as a downloadable artifact. [First successful run](https://github.com/tharbad08/TB-All-Weather-Drill/actions/runs/38327665255).
 
 **Caution:** This build uses locally defined type-signature placeholders, following the strategy used by TB Optimizer. It confirms compilation and key CLR metadata; it **cannot prove the output is equivalent to the original DLL** nor that the DLL will load successfully into real Timberborn 1.1. For a final production build, compile using the real Timberborn 1.1 and mod assemblies and compare behavior. The source-generated DLL's hash need not match the reference even if equivalent.
+
+## Moddable Weathers 11.0.1 source integration audit (2026-10-13)
+
+Upstream source: [datvm/TimberbornMods / ModdableWeathers](https://github.com/datvm/TimberbornMods/tree/master/ModdableWeathers), inspected at commit `8bc6fa14dfa8ccd299df98678971e629a2d1adc2`. Manifest: `ModdableWeathers` version **11.0.1**, minimum Timberborn **1.1.1**.
+
+- Replaced `ModdableWeatherService` exposes `WeatherDayService` (a `WeatherCycleService`), whose `CurrentWeather` and `CurrentWeatherModifiers` reflect the live stage, including resumed saves.
+- Moddable Weathers also Harmony-patches `UndergroundWaterSourceDrill.GetStrengthModifier` to return zero if blocked or contaminated. **Important:** All Weather Drill's high-priority early-return prefix can bypass that prefix. This interaction is intentional in the archived mod but is **not yet validated as a safe behavior** and must be tested with polluted aquifers; don't regard CI as approval to bypass contamination safeguards.
+- IDs in source: `TemperateWeather`, `DroughtWeather`, `BadtideWeather`, `Rain`, `Monsoon`, `SurprisinglyRefreshing`; modifiers `Drought`, `Badtide`, `Rain`, `Monsoon`, `Refreshing`.
+- `CurrentWeatherResolver` now walks inherited private fields/properties, handles missing/null observers, does not treat an unreadable modifier list as empty, and uses the configured **Other** multiplier if the modded weather service cannot be read. These changes are in source and require a **new compiled DLL** to take effect.
+- No hard dependency on Moddable Weathers was added. Without it, vanilla hazardous-weather observer checks remain in use.
+- CI workflow [audit-moddable-weathers.yml](.github/workflows/audit-moddable-weathers.yml) checks the pinned upstream source contract. It is **not** a substitute for runtime or API-signature verification with actual game DLLs.
+- Keep backups and test save/load during Rain, Monsoon, Drought, Badtide, mixed base/modifier weather and after disabling Moddable Weathers. **Do not ship the new stub-built DLL as tested.**
+
+This upstream audit documents the precise interfaces and outstanding behavior risks so future source changes can be checked before release.

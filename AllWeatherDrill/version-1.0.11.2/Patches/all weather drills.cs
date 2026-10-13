@@ -67,6 +67,12 @@ namespace TonWolfe.AllWeatherDrill
 
         public static DrillWeatherKind Resolve(HazardousWeatherObserver observer)
         {
+            // The game can query the drill while singleton initialization is still
+            // in progress. Do not turn a missing observer into a game crash.
+            if (observer == null) return DrillWeatherKind.Other;
+
+            object weatherService = GetMember(observer, "_weatherService");
+            bool moddableService = IsModdableWeatherService(weatherService);
             string baseId;
             HashSet<string> mods;
             if (TryReadModdableWeather(observer, out baseId, out mods))
@@ -99,6 +105,12 @@ namespace TonWolfe.AllWeatherDrill
                 return DrillWeatherKind.Other;
             }
 
+            // A partially loaded / updated Moddable Weathers service is not
+            // necessarily Temperate. Its current stage may be unavailable while
+            // restoring a save. Fail closed to the configured Other multiplier
+            // rather than silently using Temperate.
+            if (moddableService) return DrillWeatherKind.Other;
+
             if (observer.IsBadtideWeather) return DrillWeatherKind.Badtide;
             if (observer.IsDroughtWeather) return DrillWeatherKind.Drought;
 
@@ -124,14 +136,17 @@ namespace TonWolfe.AllWeatherDrill
                 baseId = ReadId(GetMember(cycle, "CurrentWeather"));
                 if (string.IsNullOrEmpty(baseId)) return false;
 
+                // Upstream WeatherCycleService exposes an ImmutableArray of
+                // modifiers. It implements IEnumerable, including when boxed.
+                // A missing/incompatible API must NOT be interpreted as "no
+                // modifiers": that loses Badtide/Drought precedence on reload.
                 IEnumerable currentMods = GetMember(cycle, "CurrentWeatherModifiers") as IEnumerable;
-                if (currentMods != null)
+                if (currentMods == null) return false;
+                foreach (object mod in currentMods)
                 {
-                    foreach (object mod in currentMods)
-                    {
-                        string id = ReadId(mod);
-                        if (!string.IsNullOrEmpty(id)) mods.Add(id);
-                    }
+                    string id = ReadId(mod);
+                    if (string.IsNullOrEmpty(id)) return false;
+                    mods.Add(id);
                 }
                 return true;
             }
@@ -148,6 +163,18 @@ namespace TonWolfe.AllWeatherDrill
             if (string.IsNullOrEmpty(value)) return false;
             foreach (string candidate in values)
                 if (string.Equals(value, candidate, StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
+
+        // Moddable Weathers 11.x replaces WeatherService with this subclass.
+        // Use the runtime type name rather than a compiled dependency; the
+        // optional mod can be absent, disabled or upgraded independently.
+        static bool IsModdableWeatherService(object weatherService)
+        {
+            if (weatherService == null) return false;
+            for (Type t = weatherService.GetType(); t != null; t = t.BaseType)
+                if (t.FullName == "ModdableWeathers.Services.ModdableWeatherService")
+                    return true;
             return false;
         }
 
@@ -168,11 +195,18 @@ namespace TonWolfe.AllWeatherDrill
         static object GetMember(object obj, string name)
         {
             if (obj == null) return null;
-            Type type = obj.GetType();
-            PropertyInfo prop = type.GetProperty(name, Flags);
-            if (prop != null) return prop.GetValue(obj, null);
-            FieldInfo field = type.GetField(name, Flags);
-            return field == null ? null : field.GetValue(obj);
+            // GetField/GetProperty on the derived type do not reliably see
+            // private members declared on base types (e.g. _weatherService).
+            // Walk the inheritance chain explicitly, never assuming the
+            // Moddable Weathers replacement uses the same declaring type.
+            for (Type type = obj.GetType(); type != null; type = type.BaseType)
+            {
+                PropertyInfo prop = type.GetProperty(name, Flags | BindingFlags.DeclaredOnly);
+                if (prop != null) return prop.GetValue(obj, null);
+                FieldInfo field = type.GetField(name, Flags | BindingFlags.DeclaredOnly);
+                if (field != null) return field.GetValue(obj);
+            }
+            return null;
         }
     }
 

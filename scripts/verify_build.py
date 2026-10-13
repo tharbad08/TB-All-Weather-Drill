@@ -35,7 +35,7 @@ def verify(path: Path):
     if len(data) < 1024 or data[:2] != b"MZ":
         raise ValueError("Not a valid PE DLL")
     pe = struct.unpack_from("<I", data, 0x3c)[0]
-    if data[pe:pe + 4] != b"PE\\0\\0":
+    if data[pe:pe + 4] != bytes([80, 69, 0, 0]):
         raise ValueError("PE header absent")
     # IMAGE_DIRECTORY_ENTRY_COM_DESCRIPTOR indicates a managed CLR image.
     optional = pe + 4 + 20

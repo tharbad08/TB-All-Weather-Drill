@@ -48,3 +48,19 @@ The supplied archive includes one `.cs` source file plus a compiled `.dll` (the 
 ## Known discrepancy in the supplied package
 
 The supplied `Change Log` says it adds separate Rain, Monsoon and Refreshing flow settings, but the supplied C# source only has one `NormalWeatherScale` for those three weather conditions. The changelog is preserved verbatim for provenance.
+
+## Building from source (new)
+
+A .NET Standard 2.1 project is provided at `BuildAWD/AllWeatherDrill.csproj`. It compiles the exact C# file in the packaged mod directory; it does not maintain a second source copy.
+
+The build references the game's installed `Timberborn_Data/Managed` assemblies plus **Harmony** and **eMka.ModSettings** from Steam Workshop. These dependencies are *not redistributed* here.
+
+```bash
+export TIMBERBORN_GAME_DIR="$HOME/.local/share/Steam/steamapps/common/Timberborn"
+export TIMBERBORN_WORKSHOP_DIR="$HOME/.local/share/Steam/steamapps/workshop/content/1062090"
+bash scripts/build.sh --package
+```
+
+Alternatively use `dotnet build BuildAWD/AllWeatherDrill.csproj -c Release -p:GameManagedDir=... -p:HarmonyDll=... -p:ModSettingsDir=...` with your installed DLL directories. The script verifies that the output is a managed PE assembly with the expected patch and weather-related metadata, and can package the newly built DLL.
+
+**Important verification status:** The exact supplied historical DLL has SHA-256 `6989408ddfb2ec9662b174471e0afa0e37ee90617c5ac5ca7355bfc8870e2a3a` and size 12,800 bytes. This snapshot's original and installable ZIP copies were byte-for-byte identical. This environment does **not** have dotnet or the required game/mod assemblies, so the new project has **not** been compiled or game-tested here. A newly built DLL may have a different hash despite equivalent behavior. The verification script checks structure and expected metadata only, **not IL-level or in-game equivalence**.

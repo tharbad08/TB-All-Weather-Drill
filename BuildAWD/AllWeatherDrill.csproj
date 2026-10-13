@@ -37,6 +37,7 @@
   <ItemGroup Condition="'$(UseReferenceStubs)' == 'true'">
     <PackageReference Include="Lib.Harmony" Version="2.4.1" />
     <ProjectReference Include="../ReferenceStubs/Bindito.Core/Bindito.Core.csproj" Private="false" />
+    <ProjectReference Include="../ReferenceStubs/Timberborn.BaseComponentSystem/Timberborn.BaseComponentSystem.csproj" Private="false" />
     <ProjectReference Include="../ReferenceStubs/ModSettings.Common/ModSettings.Common.csproj" Private="false" />
     <ProjectReference Include="../ReferenceStubs/ModSettings.Core/ModSettings.Core.csproj" Private="false" />
     <ProjectReference Include="../ReferenceStubs/Timberborn.BlockObjectModelSystem/Timberborn.BlockObjectModelSystem.csproj" Private="false" />

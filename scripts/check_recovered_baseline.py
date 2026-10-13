@@ -7,9 +7,9 @@ import os
 
 root = pathlib.Path(__file__).resolve().parents[1]
 pairs = [
- ("BuildAWD/AllWeatherDrill.cs", "AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.cs"),
- ("BuildAWD/package/manifest.json", "AllWeatherDrill/version-1.0.11.2/manifest.json"),
- ("BuildAWD/package/enUS.csv", "AllWeatherDrill/version-1.0.11.2/Localizations/enUS.csv"),
+ ("BuildAWD/AllWeatherDrill.cs", "AllWeatherDrill/version-1.1/Patches/all weather drills.cs"),
+ ("BuildAWD/package/manifest.json", "AllWeatherDrill/version-1.1/manifest.json"),
+ ("BuildAWD/package/enUS.csv", "AllWeatherDrill/version-1.1/Localizations/enUS.csv"),
 ]
 for src, dst in pairs:
     a, b = (root / src).read_bytes(), (root / dst).read_bytes()

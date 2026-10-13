@@ -34,8 +34,10 @@ jobs:
           git clone --filter=blob:none https://github.com/kamigari84/Automation_WeatherModifiers_Signals.git /tmp/tbrefs
           git -C /tmp/tbrefs checkout a4b8b5f82a88866a545e925af5cc1f82aefe496e
           test -d /tmp/tbrefs/bin/Release/netstandard2.1
-      - name: Verify restored source and packaging input parity
-        run: python3 scripts/check_recovered_baseline.py
+      - name: Verify updated manifest and mirrored source
+        run: |
+          python3 scripts/check_recovered_baseline.py
+          python3 scripts/verify_manifest.py
       - name: Compile against public precompiled reference assemblies (NOT handwritten stubs)
         run: dotnet build BuildAWD/AllWeatherDrill.csproj -c Release -p:PublicRefDir=/tmp/tbrefs/bin/Release/netstandard2.1 --nologo
       - name: Verify output and compare with September artifact checksum
@@ -46,17 +48,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          root="${RUNNER_TEMP}/installable/AllWeatherDrill/version-1.0.11.2"
+          root="${RUNNER_TEMP}/installable/AllWeatherDrill/version-1.1"
           mkdir -p "$root/Patches" "$root/Localizations"
           cp "BuildAWD/bin/Release/netstandard2.1/all weather drills.dll" "$root/Patches/all weather drills.dll"
           cp "BuildAWD/AllWeatherDrill.cs" "$root/Patches/all weather drills.cs"
           cp "BuildAWD/package/manifest.json" "$root/manifest.json"
           cp "BuildAWD/package/enUS.csv" "$root/Localizations/enUS.csv"
-          cp "AllWeatherDrill/version-1.0.11.2/Change Log" "$root/Change Log"
+          cp "AllWeatherDrill/version-1.1/Change Log" "$root/Change Log"
           test -s "$root/Patches/all weather drills.dll"
       - name: Upload installable mod directory
         uses: actions/upload-artifact@v4
         with:
-          name: AllWeatherDrill-contamination-guard-EXPERIMENTAL
+          name: AllWeatherDrill-v1.1.38-contamination-test
           path: ${{ runner.temp }}/installable/
           if-no-files-found: error

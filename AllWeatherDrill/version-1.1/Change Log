@@ -1,0 +1,11 @@
+1.1.38 (test branch)
+- Add contamination stop to all-weather drill output (requires in-game testing).
+- Align mod ID, settings ID and Harmony patch ID to Tharbad08.AllWeatherDrill.
+- Update mod metadata and Timberborn 1.1 version folder.
+- Preserve optional Moddable Weathers support and the vanilla fallback.
+
+1.0.5-local
+- Fix save/reload during non-temperate Moddable Weathers events.
+- Read the live base weather and active weather modifiers.
+- Add separate Rain, Monsoon, and Refreshing flow settings.
+- Treat Badtide/Drought/Monsoon/Rain/Refreshing the same whether base weather or modifier.

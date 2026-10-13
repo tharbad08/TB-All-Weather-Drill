@@ -24,7 +24,7 @@ namespace TonWolfe.AllWeatherDrill
     {
         void IModStarter.StartMod(IModEnvironment modEnvironment)
         {
-            new Harmony("TonWolfe.AllWeatherDrill").PatchAll();
+            new Harmony("Tharbad08.AllWeatherDrill").PatchAll();
         }
     }
 
@@ -39,7 +39,7 @@ namespace TonWolfe.AllWeatherDrill
     public class MSettings : ModSettingsOwner, IUnloadableSingleton
     {
         public static MSettings Instance { get; private set; }
-        protected override string ModId { get; } = "TonWolfe.AllWeatherDrill";
+        protected override string ModId { get; } = "Tharbad08.AllWeatherDrill";
 
         public ModSetting<float> NormalWeatherScale { get; } = new ModSetting<float>(0.7f, ModSettingDescriptor.CreateLocalized("ModSetting.TWAllWeatherDrill.NormalWeatherScale").SetLocalizedTooltip("ModSetting.TWAllWeatherDrill.NormalWeatherScaleDesc"));
         public ModSetting<float> BadtideWeatherScale { get; } = new ModSetting<float>(0.6f, ModSettingDescriptor.CreateLocalized("ModSetting.TWAllWeatherDrill.BadtideWeatherScale").SetLocalizedTooltip("ModSetting.TWAllWeatherDrill.BadtideWeatherScaleDesc"));

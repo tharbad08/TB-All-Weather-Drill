@@ -9,7 +9,7 @@ import re
 import sys
 
 root=Path(__file__).resolve().parents[1]
-source=(root/"AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.cs").read_text()
+source=(root/"AllWeatherDrill/version-1.1/Patches/all weather drills.cs").read_text()
 upstream=Path(sys.argv[1]) if len(sys.argv)>1 else root/"upstream/ModdableWeathers"
 checks={
 "live cycle property": (upstream/"Services/ModdableWeatherService.cs","readonly WeatherCycleService WeatherDayService"),

@@ -1,0 +1,43 @@
+name: Build All Weather Drill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-and-compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Compile with compile-time game API reference stubs
+        run: dotnet build BuildAWD/AllWeatherDrill.csproj -c Release -p:UseReferenceStubs=true --nologo
+      - name: Verify CLR assembly and important symbols
+        run: python3 scripts/verify_build.py 'BuildAWD/bin/Release/netstandard2.1/all weather drills.dll'
+      - name: Package new build (not yet game-tested)
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="${RUNNER_TEMP}/package/AllWeatherDrill/version-1.0.11.2"
+          mkdir -p "$root"
+          cp -a AllWeatherDrill/version-1.0.11.2/. "$root/"
+          cp 'BuildAWD/bin/Release/netstandard2.1/all weather drills.dll' "$root/Patches/all weather drills.dll"
+          sha256sum "$root/Patches/all weather drills.dll" | tee "${RUNNER_TEMP}/new-dll-sha256.txt"
+          echo "Reference DLL SHA256: 6989408ddfb2ec9662b174471e0afa0e37ee90617c5ac5ca7355bfc8870e2a3a"
+          cp "${RUNNER_TEMP}/new-dll-sha256.txt" "${RUNNER_TEMP}/package/build-sha256.txt"
+          echo 'Compiled against compile-time stubs, not validated against live Timberborn assemblies.' > "${RUNNER_TEMP}/package/BUILD-NOT-TESTED.txt"
+      - name: Upload generated DLL and mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: AllWeatherDrill-compiled-reference-build
+          path: ${{ runner.temp }}/package/
+          if-no-files-found: error

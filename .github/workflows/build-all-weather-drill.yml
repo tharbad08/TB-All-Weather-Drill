@@ -55,6 +55,7 @@ jobs:
           cp "BuildAWD/package/manifest.json" "$root/manifest.json"
           cp "BuildAWD/package/enUS.csv" "$root/Localizations/enUS.csv"
           cp "AllWeatherDrill/version-1.1/Change Log" "$root/Change Log"
+          cp "assets/AllWeatherDrill-WorkshopPreview-960x540.png" "$root/preview.png"
           test -s "$root/Patches/all weather drills.dll"
       - name: Upload installable mod directory
         uses: actions/upload-artifact@v4

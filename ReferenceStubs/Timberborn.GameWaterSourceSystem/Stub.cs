@@ -1,0 +1,1 @@
+namespace Timberborn.GameWaterSourceSystem { public class UndergroundWaterSourceDrill { public void OnEnterFinishedState(){} public void OnHazardousWeatherStarted(){} public float GetStrengthModifier()=>0; } }

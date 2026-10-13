@@ -8,11 +8,20 @@ cd "$(dirname "$0")/.."
 managed="$TIMBERBORN_GAME_DIR/Timberborn_Data/Managed"
 test -d "$managed" || { echo "Missing game DLL folder: $managed" >&2; exit 1; }
 
-# Harmony may be placed directly in the Workshop root or a version subfolder.
-harmony=$(find "$TIMBERBORN_WORKSHOP_DIR/3284904751" -type f -name '0Harmony.dll' -print -quit 2>/dev/null || true)
-modsettings="$TIMBERBORN_WORKSHOP_DIR/3283831040"
-test -n "$harmony" && test -f "$harmony" || { echo "Missing Harmony; subscribe to Workshop item 3284904751" >&2; exit 1; }
-test -d "$modsettings" || { echo "Missing eMka.ModSettings; subscribe to Workshop item 3283831040" >&2; exit 1; }
+# Allow explicit paths; otherwise discover installed dependencies by DLL names.
+harmony="${HARMONY_DLL:-}"
+if [[ -z "$harmony" ]]; then
+  harmony=$(find "$TIMBERBORN_WORKSHOP_DIR" -type f -name '0Harmony.dll' -print -quit 2>/dev/null || true)
+fi
+modsettings="${MODSETTINGS_DIR:-}"
+if [[ -z "$modsettings" ]]; then
+  settings_dll=$(find "$TIMBERBORN_WORKSHOP_DIR" -type f \( -name 'ModSettings.dll' -o -name 'ModSettings.Core.dll' \) -print -quit 2>/dev/null || true)
+  if [[ -n "$settings_dll" ]]; then
+    modsettings=$(dirname "$settings_dll")
+  fi
+fi
+test -n "$harmony" && test -f "$harmony" || { echo "Missing Harmony DLL; set HARMONY_DLL" >&2; exit 1; }
+test -n "$modsettings" && test -d "$modsettings" || { echo "Missing ModSettings DLL directory; set MODSETTINGS_DIR" >&2; exit 1; }
 command -v dotnet >/dev/null || { echo ".NET SDK (8 or later) required" >&2; exit 1; }
 
 dotnet build BuildAWD/AllWeatherDrill.csproj -c Release \

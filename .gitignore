@@ -1,0 +1,8 @@
+# Build outputs (do not ignore the original source package's Patches/ directory)
+**/bin/
+**/obj/
+dist/
+.vs/
+.idea/
+*.user
+*.suo

@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Matches the target framework and assembly name of the supplied DLL. -->
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>all weather drills</AssemblyName>
+    <RootNamespace>TonWolfe.AllWeatherDrill</RootNamespace>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- The existing committed source is the single source of truth. -->
+    <Compile Include="../AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.cs" Link="all weather drills.cs" />
+    <!-- Game assemblies must come from a legal local installation of Timberborn. -->
+    <Reference Include="$(GameManagedDir)/*.dll">
+      <Private>false</Private>
+    </Reference>
+    <!-- Steam Workshop: Harmony (3284904751); Mod Settings (3283831040). -->
+    <Reference Include="$(HarmonyDll)">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="$(ModSettingsDir)/**/*.dll">
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="CheckTimberbornReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(GameManagedDir)' == '' Or !Exists('$(GameManagedDir)')"
+           Text="Set GameManagedDir to your installed Timberborn_Data/Managed directory." />
+    <Error Condition="'$(HarmonyDll)' == '' Or !Exists('$(HarmonyDll)')"
+           Text="Set HarmonyDll to the installed Harmony 0Harmony.dll." />
+    <Error Condition="'$(ModSettingsDir)' == '' Or !Exists('$(ModSettingsDir)')"
+           Text="Set ModSettingsDir to the installed eMka.ModSettings Workshop folder." />
+  </Target>
+</Project>

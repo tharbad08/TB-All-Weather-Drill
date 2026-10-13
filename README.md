@@ -1,5 +1,9 @@
 # All Weather Drill — recovered September 2026 baseline
 
+![All Weather Drill — Workshop preview](assets/AllWeatherDrill-WorkshopPreview-960x540.png)
+
+*Workshop banner: 960×540 pixels. The artwork is for the Steam Workshop listing, not an in-game icon. The full-size preview is stored in [assets](assets/).*
+
 **Stable baseline:** the source behind the previously used **12,800-byte DLL** is restored from [`tharbad08/TimberbornMods` / `build/all-weather-drill-mw-savefix`](https://github.com/tharbad08/TimberbornMods/tree/build/all-weather-drill-mw-savefix/BuildAWD). Original mod by **Ton Wolfe**, [Workshop item 3609443372](https://steamcommunity.com/sharedfiles/filedetails/?id=3609443372). This repository contains a modified version and preserves author credit.
 
 **Start with [docs/MAINTENANCE-HANDOFF.md](docs/MAINTENANCE-HANDOFF.md)** before changes. It documents features, weather logic, dependency versions, source history, build, exact checksums, differences between tested and October experimental DLLs, known bugs, future tests and recovery instructions.

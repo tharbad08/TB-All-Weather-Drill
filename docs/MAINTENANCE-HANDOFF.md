@@ -51,3 +51,10 @@ Other Timberborn lessons: a prior `_pausableBuilding` injection failed on v1.1; 
 | `scripts/verify_build.py` | Structural DLL sanity checks; **not** in-game validation |
 | `.github/workflows/build-all-weather-drill.yml` | Automated build against pinned real reference binaries |
 | `.github/workflows/audit-moddable-weathers.yml` | Optional upstream source API contract audit |
+
+
+## Recovery validation (2026-10-13)
+- The restored [GitHub Actions run 38331596864](https://github.com/tharbad08/TB-All-Weather-Drill/actions/runs/38331596864) completed successfully, using the pinned external reference set and Harmony 2.3.3. Source, manifest, and localization mirrors passed strict byte checks.
+- New DLL: **12,800 bytes**, SHA-256 `73be5678e3fb725021fd887e75b3c99a5eff15e08093851c5c1b47f89826263b`. Its hash does **not** match the September reference DLL `6989408ddfb2ec9662b174471e0afa0e37ee90617c5ac5ca7355bfc8870e2a3a`. Thus the new build is successful, **not byte-identical** and **not separately game-tested**. Compiler/build-path metadata is a possible explanation, not a proven root cause; compare IL/metadata before claiming full equivalence.
+- The September compiled DLL from the historical Actions artifact has been preserved separately as the known previously used build, for installation or future binary diff. Do not overwrite or relabel it with the newer generated DLL.
+- [Moddable Weathers source-contract audit](https://github.com/tharbad08/TB-All-Weather-Drill/actions/runs/38331596815) passed after changing the audit to check the actual recovered baseline rather than the abandoned October experimental guards.

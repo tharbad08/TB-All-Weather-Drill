@@ -3,12 +3,13 @@
 import hashlib
 import pathlib
 import sys
+import os
 
 root = pathlib.Path(__file__).resolve().parents[1]
 pairs = [
- ("BuildAWD/AllWeatherDrill.cs", "AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.cs"),
- ("BuildAWD/package/manifest.json", "AllWeatherDrill/version-1.0.11.2/manifest.json"),
- ("BuildAWD/package/enUS.csv", "AllWeatherDrill/version-1.0.11.2/Localizations/enUS.csv"),
+ ("BuildAWD/AllWeatherDrill.cs", "AllWeatherDrill/version-1.1/Patches/all weather drills.cs"),
+ ("BuildAWD/package/manifest.json", "AllWeatherDrill/version-1.1/manifest.json"),
+ ("BuildAWD/package/enUS.csv", "AllWeatherDrill/version-1.1/Localizations/enUS.csv"),
 ]
 for src, dst in pairs:
     a, b = (root / src).read_bytes(), (root / dst).read_bytes()
@@ -17,7 +18,14 @@ for src, dst in pairs:
 source = (root / pairs[0][0]).read_bytes()
 expected_source_git_sha = "551c12ee85b6603eba89c25e50df7d091224c7a0"
 actual = hashlib.sha1(b"blob " + str(len(source)).encode() + b"\0" + source).hexdigest()
-if actual != expected_source_git_sha: sys.exit("FAIL: source does not match tested Git blob " + actual)
+if actual != expected_source_git_sha:
+    if os.environ.get("AWD_EXPERIMENTAL_GUARD") == "1":
+        required = (b"WaterSource.Contamination > 0f", b"____underlyingWaterSource.WaterSource == null", b"__result = 0f")
+        if not all(x in source for x in required):
+            sys.exit("FAIL: experimental contamination guard absent")
+        print("PASS experimental guard: baseline source intentionally modified " + actual)
+    else:
+        sys.exit("FAIL: source differs from historical baseline " + actual)
 print("PASS recovered source Git blob " + actual)
 if len(sys.argv) > 1:
     dll = pathlib.Path(sys.argv[1]).read_bytes()

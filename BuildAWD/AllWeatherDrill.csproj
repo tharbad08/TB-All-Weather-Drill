@@ -7,6 +7,9 @@
     <AssemblyName>all weather drills</AssemblyName>
     <RootNamespace>TonWolfe.AllWeatherDrill</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Version>1.1.38</Version>
+    <AssemblyVersion>1.1.38.0</AssemblyVersion>
+    <FileVersion>1.1.38.0</FileVersion>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.3.3" />

@@ -1,0 +1,21 @@
+{
+  "Name": "All Weather Drill (ModdableWeathers)",
+  "Version": "1.1.38",
+  "Id": "Tharbad08.AllWeatherDrill",
+  "MinimumGameVersion": "1.1",
+  "Description": "Allows aquifer drills to produce water during droughts, badtides and custom weather. Configure flow for Temperate, Drought, Badtide and unknown weather; Rain, Refreshing and Monsoon use Temperate flow. Reads active Moddable Weathers stages and modifiers after save/load. Stops production from contaminated water sources.",
+  "RequiredMods": [
+    {
+      "Id": "Harmony",
+      "MinimumVersion": "0.6.0.0"
+    },
+    {
+      "Id": "eMka.ModSettings"
+    }
+  ],
+  "OptionalMods": [
+    {
+      "Id": "ModdableWeathers"
+    }
+  ]
+}

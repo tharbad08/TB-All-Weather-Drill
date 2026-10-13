@@ -24,7 +24,7 @@ namespace TonWolfe.AllWeatherDrill
     {
         void IModStarter.StartMod(IModEnvironment modEnvironment)
         {
-            new Harmony("TonWolfe.AllWeatherDrill").PatchAll();
+            new Harmony("Tharbad08.AllWeatherDrill").PatchAll();
         }
     }
 
@@ -39,7 +39,7 @@ namespace TonWolfe.AllWeatherDrill
     public class MSettings : ModSettingsOwner, IUnloadableSingleton
     {
         public static MSettings Instance { get; private set; }
-        protected override string ModId { get; } = "TonWolfe.AllWeatherDrill";
+        protected override string ModId { get; } = "Tharbad08.AllWeatherDrill";
 
         public ModSetting<float> NormalWeatherScale { get; } = new ModSetting<float>(0.7f, ModSettingDescriptor.CreateLocalized("ModSetting.TWAllWeatherDrill.NormalWeatherScale").SetLocalizedTooltip("ModSetting.TWAllWeatherDrill.NormalWeatherScaleDesc"));
         public ModSetting<float> BadtideWeatherScale { get; } = new ModSetting<float>(0.6f, ModSettingDescriptor.CreateLocalized("ModSetting.TWAllWeatherDrill.BadtideWeatherScale").SetLocalizedTooltip("ModSetting.TWAllWeatherDrill.BadtideWeatherScaleDesc"));
@@ -218,8 +218,26 @@ namespace TonWolfe.AllWeatherDrill
         public static bool GetStrength(
             ref float __result,
             MechanicalNode ____mechanicalNode,
-            HazardousWeatherObserver ____hazardousWeatherObserver)
+            HazardousWeatherObserver ____hazardousWeatherObserver,
+            UnderlyingWaterSource ____underlyingWaterSource)
         {
+            // Preserve the contamination guard from Moddable Weathers'
+            // StopWaterIfBlockedOrBadwater prefix. Our earlier Harmony prefix
+            // returns false to implement all-weather flow, which may prevent
+            // Moddable Weathers' later prefix from running. Pollution is NOT
+            // a weather blockage and must still stop the drill.
+            //
+            // Unlike the upstream mod's _isBlocking check, we intentionally
+            // ignore weather blocking so the drill can work in drought/badtide.
+            // Missing water source: fail closed; never produce unverified water.
+            if (____underlyingWaterSource == null ||
+                ____underlyingWaterSource.WaterSource == null ||
+                ____underlyingWaterSource.WaterSource.Contamination > 0f)
+            {
+                __result = 0f;
+                return false;
+            }
+
             // Current Timberborn no longer stores a PausableBuilding on the drill.
             // MechanicalNode.ActiveAndPowered is the game's own gate for whether
             // the drill may produce anything (covers paused/unpowered/inactive).

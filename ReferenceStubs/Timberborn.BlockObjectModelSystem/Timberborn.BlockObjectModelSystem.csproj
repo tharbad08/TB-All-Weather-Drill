@@ -1,4 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><Nullable>disable</Nullable><ImplicitUsings>disable</ImplicitUsings><LangVersion>latest</LangVersion><AssemblyVersion>0.0.0.0</AssemblyVersion><FileVersion>0.0.0.0</FileVersion></PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="../UnityEngine.CoreModule/UnityEngine.CoreModule.csproj" Private="false" />
-  </ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><Nullable>disable</Nullable><AssemblyVersion>0.0.0.0</AssemblyVersion></PropertyGroup><ItemGroup><ProjectReference Include="../Timberborn.BaseComponentSystem/Timberborn.BaseComponentSystem.csproj" Private="false" /></ItemGroup></Project>

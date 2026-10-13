@@ -1,0 +1,1 @@
+namespace Timberborn.WaterSourceSystem { public class UnderlyingWaterSource { public UnityEngine.Component WaterSource {get;set;} public void DisableDroughtInfluence() {} } }

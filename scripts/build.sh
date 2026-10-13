@@ -1,44 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")/.."
-
-: "${TIMBERBORN_GAME_DIR:?Set TIMBERBORN_GAME_DIR to the Timberborn game installation}"
-: "${TIMBERBORN_WORKSHOP_DIR:?Set TIMBERBORN_WORKSHOP_DIR to steamapps/workshop/content/1062090}"
-
-managed="$TIMBERBORN_GAME_DIR/Timberborn_Data/Managed"
-test -d "$managed" || { echo "Missing game DLL folder: $managed" >&2; exit 1; }
-
-# Allow explicit paths; otherwise discover installed dependencies by DLL names.
-harmony="${HARMONY_DLL:-}"
-if [[ -z "$harmony" ]]; then
-  harmony=$(find "$TIMBERBORN_WORKSHOP_DIR" -type f -name '0Harmony.dll' -print -quit 2>/dev/null || true)
+# Recreates the September 2026 GitHub Actions build as closely as practical.
+# Uses precompiled reference assemblies from a pinned third-party repository.
+# Never substitutes placeholder Timberborn/Bindito stub assemblies.
+ref_sha="a4b8b5f82a88866a545e925af5cc1f82aefe496e"
+refs="${PUBLIC_REF_DIR:-}"
+if [[ -z "$refs" ]]; then
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  git clone --filter=blob:none https://github.com/kamigari84/Automation_WeatherModifiers_Signals.git "$tmp/tbrefs"
+  git -C "$tmp/tbrefs" checkout "$ref_sha"
+  refs="$tmp/tbrefs/bin/Release/netstandard2.1"
 fi
-modsettings="${MODSETTINGS_DIR:-}"
-if [[ -z "$modsettings" ]]; then
-  settings_dll=$(find "$TIMBERBORN_WORKSHOP_DIR" -type f \( -name 'ModSettings.dll' -o -name 'ModSettings.Core.dll' \) -print -quit 2>/dev/null || true)
-  if [[ -n "$settings_dll" ]]; then
-    modsettings=$(dirname "$settings_dll")
-  fi
-fi
-test -n "$harmony" && test -f "$harmony" || { echo "Missing Harmony DLL; set HARMONY_DLL" >&2; exit 1; }
-test -n "$modsettings" && test -d "$modsettings" || { echo "Missing ModSettings DLL directory; set MODSETTINGS_DIR" >&2; exit 1; }
-command -v dotnet >/dev/null || { echo ".NET SDK (8 or later) required" >&2; exit 1; }
-
-dotnet build BuildAWD/AllWeatherDrill.csproj -c Release \
-  -p:GameManagedDir="$managed" \
-  -p:HarmonyDll="$harmony" \
-  -p:ModSettingsDir="$modsettings"
-
+[[ -d "$refs" ]] || { echo "Reference directory missing: $refs" >&2; exit 1; }
+command -v dotnet >/dev/null || { echo "Install .NET SDK 8" >&2; exit 1; }
+python3 scripts/check_recovered_baseline.py
+dotnet build BuildAWD/AllWeatherDrill.csproj -c Release "-p:PublicRefDir=$refs" --nologo
 dll="BuildAWD/bin/Release/netstandard2.1/all weather drills.dll"
-test -s "$dll"
 python3 scripts/verify_build.py "$dll"
-echo "Compiled: $dll"
-
+python3 scripts/check_recovered_baseline.py "$dll"
 if [[ "${1:-}" == "--package" ]]; then
+  root="dist/AllWeatherDrill/version-1.0.11.2"
   rm -rf dist/AllWeatherDrill
-  mkdir -p dist/AllWeatherDrill
-  cp -a AllWeatherDrill/version-1.0.11.2 dist/AllWeatherDrill/
-  cp "$dll" "dist/AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.dll"
-  (cd dist && zip -qr AllWeatherDrill-built.zip AllWeatherDrill)
-  echo "Packaged: dist/AllWeatherDrill-built.zip"
+  mkdir -p "$root/Patches" "$root/Localizations"
+  cp "$dll" "$root/Patches/all weather drills.dll"
+  cp BuildAWD/AllWeatherDrill.cs "$root/Patches/all weather drills.cs"
+  cp BuildAWD/package/manifest.json "$root/manifest.json"
+  cp BuildAWD/package/enUS.csv "$root/Localizations/enUS.csv"
+  cp "AllWeatherDrill/version-1.0.11.2/Change Log" "$root/Change Log"
+  (cd dist && zip -qr AllWeatherDrill-recovered-build.zip AllWeatherDrill)
+  echo "dist/AllWeatherDrill-recovered-build.zip"
 fi

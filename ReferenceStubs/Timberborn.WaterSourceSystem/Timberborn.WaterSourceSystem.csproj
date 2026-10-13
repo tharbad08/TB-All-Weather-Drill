@@ -1,1 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><TargetFramework>netstandard2.1</TargetFramework><AssemblyVersion>0.0.0.0</AssemblyVersion></PropertyGroup><ItemGroup><ProjectReference Include="../Timberborn.BaseComponentSystem/Timberborn.BaseComponentSystem.csproj" Private="false" /></ItemGroup></Project>

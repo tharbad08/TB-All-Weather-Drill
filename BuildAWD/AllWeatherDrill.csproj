@@ -1,65 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!-- Matches the target framework and assembly name of the supplied DLL. -->
     <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>10.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
     <AssemblyName>all weather drills</AssemblyName>
     <RootNamespace>TonWolfe.AllWeatherDrill</RootNamespace>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-    <Version>1.0.0</Version>
-    <LangVersion>latest</LangVersion>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <Deterministic>true</Deterministic>
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <UseReferenceStubs Condition="'$(UseReferenceStubs)'==''">false</UseReferenceStubs>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
-
   <ItemGroup>
-    <!-- The existing committed source is the single source of truth. -->
-    <Compile Include="../AllWeatherDrill/version-1.0.11.2/Patches/all weather drills.cs" Link="all weather drills.cs" />
-    <!-- Game assemblies must come from a legal local installation of Timberborn. -->
-    <Reference Include="$(GameManagedDir)/*.dll" Condition="'$(UseReferenceStubs)' != 'true'">
-      <Private>false</Private>
-    </Reference>
-    <!-- Steam Workshop: Harmony (3284904751); Mod Settings (3283831040). -->
-    <Reference Include="$(HarmonyDll)" Condition="'$(UseReferenceStubs)' != 'true'">
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="$(ModSettingsDir)/**/*.dll" Condition="'$(UseReferenceStubs)' != 'true'">
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" />
+    <Reference Include="$(PublicRefDir)/*.dll">
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup Condition="'$(UseReferenceStubs)' == 'true'">
-    <PackageReference Include="Lib.Harmony" Version="2.4.1" />
-    <ProjectReference Include="../ReferenceStubs/Bindito.Core/Bindito.Core.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.BaseComponentSystem/Timberborn.BaseComponentSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/ModSettings.Common/ModSettings.Common.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/ModSettings.Core/ModSettings.Core.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.BlockObjectModelSystem/Timberborn.BlockObjectModelSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.BlockingSystem/Timberborn.BlockingSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.GameWaterSourceSystem/Timberborn.GameWaterSourceSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.HazardousWeatherSystem/Timberborn.HazardousWeatherSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.MechanicalSystem/Timberborn.MechanicalSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.ModManagerScene/Timberborn.ModManagerScene.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.Modding/Timberborn.Modding.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.SettingsSystem/Timberborn.SettingsSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.SingletonSystem/Timberborn.SingletonSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.WaterSourceSystem/Timberborn.WaterSourceSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/Timberborn.WorkSystem/Timberborn.WorkSystem.csproj" Private="false" />
-    <ProjectReference Include="../ReferenceStubs/UnityEngine.CoreModule/UnityEngine.CoreModule.csproj" Private="false" />
-  </ItemGroup>
-
-  <Target Name="CheckTimberbornReferences" BeforeTargets="ResolveReferences" Condition="'$(UseReferenceStubs)' != 'true'">
-    <Error Condition="'$(GameManagedDir)' == '' Or !Exists('$(GameManagedDir)')"
-           Text="Set GameManagedDir to your installed Timberborn_Data/Managed directory." />
-    <Error Condition="'$(HarmonyDll)' == '' Or !Exists('$(HarmonyDll)')"
-           Text="Set HarmonyDll to the installed Harmony 0Harmony.dll." />
-    <Error Condition="'$(ModSettingsDir)' == '' Or !Exists('$(ModSettingsDir)')"
-           Text="Set ModSettingsDir to the installed eMka.ModSettings Workshop folder." />
-  </Target>
 </Project>

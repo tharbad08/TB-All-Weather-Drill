@@ -1,1 +1,0 @@
-namespace Timberborn.WorkSystem { public interface IStubMarker {} }

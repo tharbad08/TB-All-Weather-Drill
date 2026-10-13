@@ -1,1 +1,0 @@
-namespace Timberborn.MechanicalSystem { public class MechanicalNode { public bool ActiveAndPowered {get;set;} public float PowerEfficiency {get;set;} public void SetInputMultiplier(float v) {} } }

@@ -71,7 +71,9 @@ namespace TonWolfe.AllWeatherDrill
             // in progress. Do not turn a missing observer into a game crash.
             if (observer == null) return DrillWeatherKind.Other;
 
-            object weatherService = GetMember(observer, "_weatherService");
+            object weatherService = null;
+            try { weatherService = GetMember(observer, "_weatherService"); }
+            catch { /* A changed private field must not crash the simulation. */ }
             bool moddableService = IsModdableWeatherService(weatherService);
             string baseId;
             HashSet<string> mods;

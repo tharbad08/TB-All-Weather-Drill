@@ -1,1 +1,1 @@
-namespace Timberborn.HazardousWeatherSystem { public class HazardousWeatherObserver { private object _weatherService; public bool IsBadtideWeather {get;set;} public bool IsDroughtWeather {get;set;} public void SetWeatherService(object x){_weatherService=x;} } }
+namespace Timberborn.HazardousWeatherSystem { internal static class NamespaceOnly {} }

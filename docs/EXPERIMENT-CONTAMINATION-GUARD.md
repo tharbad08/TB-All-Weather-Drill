@@ -24,3 +24,14 @@ In a disposable save, test:
 ## How to revert
 
 Switch to `main` and build/package or use the preserved September 25 tested zip; no main branch source was modified by this experiment.
+
+## Release metadata for the current test build
+
+- **Version:** `1.1.38` — game version `1.1` plus an estimated internal build sequence. Count: 12 explicitly named historical AWD workflow runs on the September branch and 25 build-workflow runs in the new repository through this change, totaling **37 traced attempts**; the current numbered version is the next build, 38. Local/unrecorded builds may make the true total higher.
+- **Display name:** `All Weather Drill (ModdableWeathers)`, retaining the supplied custom name.
+- **New mod ID:** `Tharbad08.AllWeatherDrill`, exactly as in the user's edited manifest. The Harmony patch owner and ModSettings owner were changed to match. **This is a breaking identity change**: previous mod settings under `TonWolfe.AllWeatherDrill` are not guaranteed to migrate. Reconfigure the multipliers after installing, and disable the old copy to avoid duplicate patching.
+- **Minimum game version:** `1.1`, per request. Installation folder now `version-1.1`.
+- **Dependencies:** Harmony and eMka.ModSettings required; ModdableWeathers intentionally optional. The actual source reads the modded `WeatherDayService` via reflection when installed, and uses `HazardousWeatherObserver.IsBadtideWeather/IsDroughtWeather` without it. The user-facing display name emphasizes its MW support but does not make the mod mandatory.
+- **Description:** updated to describe actual weather-scale settings, save/load support and contaminated-water suppression; no claim of separate Rain/Monsoon/Refreshing sliders.
+- **Original author credit:** Ton Wolfe remains credited in the repository history; do not conflate the local `Tharbad08` fork ID with original authorship.
+

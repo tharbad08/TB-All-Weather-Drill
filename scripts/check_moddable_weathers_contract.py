@@ -24,9 +24,10 @@ for name,(path,needle) in checks.items():
     if needle not in path.read_text(encoding="utf-8-sig"): raise SystemExit("FAIL upstream API changed: "+name)
 for key in ("TemperateWeather","Rain","Monsoon","SurprisinglyRefreshing","BadtideWeather","DroughtWeather","Badtide","Drought","Refreshing"):
     if f'"{key}"' not in source: raise SystemExit("FAIL missing known weather/modifier ID "+key)
-for part in ("IsModdableWeatherService","BindingFlags.DeclaredOnly","if (currentMods == null) return false;",
-             "if (moddableService) return DrillWeatherKind.Other;",
-             "if (observer == null) return DrillWeatherKind.Other;"):
-    if part not in source: raise SystemExit("FAIL missing safe weather resolution rule: "+part)
-print("PASS: Moddable Weathers 11.0.1 source contract matches known drill integration")
-print("NOTE: live Unity game validation still required")
+# The recovered September-tested source intentionally predates October's
+# experimental null/reflection guards. Audit upstream contract without
+# pretending those untested guards are part of this baseline.
+for part in ('WeatherDayService', 'CurrentWeather', 'CurrentWeatherModifiers', 'GetStrengthModifier'):
+    if part not in source: raise SystemExit("FAIL missing weather integration: "+part)
+print("PASS: pinned Moddable Weathers source contract matches September baseline")
+print("NOTE: October reflection guards are NOT in tested source; runtime testing is still required")
